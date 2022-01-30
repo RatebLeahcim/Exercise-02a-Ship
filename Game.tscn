@@ -1,0 +1,57 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Assets/Player.png" type="Texture" id=1]
+[ext_resource path="res://Assets/Exhaust.png" type="Texture" id=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends KinematicBody2D
+
+var velocity = Vector2.ZERO
+
+var rotation_speed = 5.0
+var speed = 0.1
+var max_speed = 50
+
+
+
+func _ready():
+	pass
+
+func _physics_process(_delta):
+	position = position + velocity
+	velocity = velocity.normalized() * clamp(velocity.length(), 0, max_speed)
+	
+	$Exhaust.hide()
+	if Input.is_action_pressed(\"forward\"):
+		velocity = velocity + Vector2(0, -speed).rotated(rotation)
+		$Exhaust.show()
+	if Input.is_action_pressed(\"left\"):
+		rotation_degrees = rotation_degrees - rotation_speed
+	if Input.is_action_pressed(\"right\"):
+		rotation_degrees = rotation_degrees + rotation_speed
+	
+	position.x = wrapf(position.x, 0, 1024)
+	position.y = wrapf(position.y, 0, 600)
+"
+
+[node name="Game" type="Node2D"]
+__meta__ = {
+"_editor_description_": "The root of the scene."
+}
+
+[node name="Player" type="KinematicBody2D" parent="."]
+position = Vector2( 512, 300 )
+script = SubResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Exhaust" type="Sprite" parent="Player"]
+position = Vector2( 0, 40 )
+texture = ExtResource( 2 )
+
+[node name="Sprite" type="Sprite" parent="Player"]
+texture = ExtResource( 1 )
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Player"]
+polygon = PoolVector2Array( 5, -25.2, 5, -22.5, 28.3, 17, 27.2, 19, 25.9, 19, 17.9, 28, 13.6, 28, -0.700001, 21.7, -19, 29, -19, 25.9, -28, 17.9, -28, 14.4, -3, -25.6, -3, -29.2 )
